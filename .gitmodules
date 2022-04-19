@@ -1,0 +1,3 @@
+[submodule "crwn-client"]
+	path = client
+	url = https://github.com/jzorzetti/crwn-client.git
