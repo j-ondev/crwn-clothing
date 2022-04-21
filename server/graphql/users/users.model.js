@@ -1,7 +1,5 @@
-const path = require('path')
-
 const { ApolloError } = require('apollo-server-express')
-const db = require(path.join(__dirname, '..', '..', 'services', 'database.js'))
+const db = require('../../services/database')
 
 async function getAllUsers() {
   try {

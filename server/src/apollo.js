@@ -1,6 +1,5 @@
-const path = require('path')
 const { ApolloServer } = require('apollo-server-express')
-const schema = require(path.join(__dirname, '..', 'graphql', 'schema.js'))
+const schema = require('../graphql/schema')
 
 async function startApolloServer(app) {
   const apolloServer = new ApolloServer({ schema })

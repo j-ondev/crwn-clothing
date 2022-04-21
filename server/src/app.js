@@ -4,7 +4,7 @@ const morgan = require('morgan')
 const helmet = require('helmet')
 
 const app = express()
-const isDevelopment = process.env.ENVIRONMENT === 'development'
+const isDevelopment = process.env.NODE_ENV === 'development'
 
 app.use(cors())
 // app.use(morgan('combined'))
