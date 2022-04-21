@@ -1,7 +1,0 @@
-type Query {
-  test: [Test]
-}
-
-type Test {
-  message: String!
-}

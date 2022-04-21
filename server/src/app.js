@@ -7,7 +7,7 @@ const app = express()
 const isDevelopment = process.env.ENVIRONMENT === 'development'
 
 app.use(cors())
-app.use(morgan('combined'))
+// app.use(morgan('combined'))
 app.use(helmet({
   crossOriginEmbedderPolicy: !isDevelopment,
   contentSecurityPolicy: !isDevelopment
