@@ -22,10 +22,11 @@ authRouter.get('/callback', passport.authenticate('google', {
 
   const token = generateJWT(user)
 
-  res.json({
-    success: true,
-    token
+  res.cookie('jwt', token, {
+    maxAge: 1 * 1000 * 60 * 60 * 24,
+    httpOnly: true
   })
+  res.redirect('/profile')
 })
 
 module.exports = authRouter

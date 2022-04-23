@@ -6,7 +6,7 @@ const secretOrKey = isDevelopment ? process.env.JWT_SECRET_DEV : process.env.JWT
 
 passport.use(new JwtStrategy(
   {
-    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    jwtFromRequest: ExtractJwt.fromHeader('authorization'),
     secretOrKey,
   },
   (payload, done) => {

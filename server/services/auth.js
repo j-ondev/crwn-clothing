@@ -7,7 +7,7 @@ const secretOrKey = isDevelopment ?
 
 const generateJWT = (payload) => {
   return jwt.sign(payload, secretOrKey, {
-    expiresIn: 604800
+    expiresIn: '1d'
   });
 }
 
