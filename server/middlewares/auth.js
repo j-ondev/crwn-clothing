@@ -1,23 +1,20 @@
-function isAuthenticated(req, res, next) {
-  const isLoggedIn = true
-  
-  if (!isLoggedIn) {
-    return res.status(401).json({
-      error: 'You must log in!'
-    })
-  }
+const passport = require('passport')
 
-  next()
-}
+const isAuthenticated = passport.authenticate('jwt', { session: false })
 
-function hasPermissions(req, res, next) {
-  const hasPermission = true
+// function hasPermissions(req, res, next) {
+//   const hasPermission = true
 
-  if(!hasPermission) {
-    return res.status(403).json({
-      error: `You don't have permission.`
-    })
-  }
+//   if(!hasPermission) {
+//     return res.status(403).json({
+//       error: `You don't have permission.`
+//     })
+//   }
 
-  next()
+//   next()
+// }
+
+module.exports = {
+  isAuthenticated,
+  // hasPermissions
 }
