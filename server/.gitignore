@@ -170,3 +170,6 @@ ehthumbs_vista.db
 
 # Certificates
 *.pem
+
+# Keys
+*.keys.*

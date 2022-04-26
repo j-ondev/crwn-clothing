@@ -7,6 +7,14 @@ module.exports = {
     },
     user: (_, args) => {
       return usersModel.getUserById(args.id)
+    },
+    userBySocialId: (_, args) => {
+      return usersModel.getUserBySocialId(args)
+    }
+  },
+  Mutation: {
+    addSocialUser: (_, args) => {
+      return usersModel.addSocialUser(args)
     }
   }
 }

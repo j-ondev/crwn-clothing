@@ -1,49 +1,67 @@
 const authRouter = require('express').Router()
+const jwt = require('jsonwebtoken')
 
-const verifyToken = require('../../services/googleAuth')
-const db = require('../../services/database')
+const { getEnv } = require('../../helpers/config')
+const verifyToken = require('../../helpers/googleAuth')
+const { getUserBySocialId, addSocialUser, updateUserToken } = require('../../graphql/users/users.model')
 
-authRouter.post('/w', async (req, res) => {
-  const { tokenId } = req.body
-  const googleUser = await verifyToken(tokenId)
+const isDevelopment = getEnv(['NODE_ENV'])[0] === 'development'
+const [ secretOrPrivate ] = getEnv([isDevelopment ? 'JWT_SECRET_DEV' : 'JWT_SECRET_PROD'])
+
+authRouter.post('/verify', (req, res) => {
+  const { credential } = req.body
   
-  if (googleUser.error) {
-    return res.status(500).json({ error: googleUser.error })
+  verifyToken(credential)
+    .then(user => res.status(200).json(user))
+    .catch(err => res.status(500).json({ error: err }))
+})
+
+authRouter.post('/authenticate', async (req, res) => {
+  const { googleid, display_name, email, exp_time } = req.body
+
+  const user = await getUserBySocialId({
+    socialId: googleid, provider: 'google'
+  })
+
+  const token = jwt.sign({
+    name: user.display_name,
+    email: user.email
+  }, secretOrPrivate, {
+    subject: String(user.id),
+    expiresIn: exp_time,
+  })
+
+  let errors = []
+  let httpStatusCode = 500
+
+  if (user) {
+    const result = await updateUserToken({
+      id: user.id,
+      token
+    })
+
+    if (result && result.errors)
+      result.errors.map(error => errors.push(error.message))
+    else
+      httpStatusCode = 200
+  } else {
+    const result = await addSocialUser({
+      socialId: googleid,
+      display_name,
+      email,
+      token,
+      provider: 'google'
+    })
+
+    if (result && result.errors)
+      result.errors.map(error => errors.push(error.message))
+    else
+      httpStatusCode = 201
   }
 
-  try {
-    const { rows: user } =
-      await db.query(`SELECT * FROM users WHERE email='${googleUser.email}'`)
-
-    if (user && user.length === 1) {
-      const updateTime = new Date(Date.now())
-      const query = 'UPDATE users SET token = $1, updated_at = $2 WHERE email = $3'
-      const values = [ tokenId, updateTime, googleUser.email ]
-
-      db.query(query, values, (error) => {
-        if (error) {
-          return res.status(500).json({ error: error.stack })
-        }
-
-        return res.status(200).json({
-          success: 'Logged in.'
-        })
-      })
-    } else {
-      const query = 'INSERT INTO users(googleid, display_name, email, token) VALUES($1, $2, $3, $4)'
-      const values = [...Object.values(googleUser), tokenId]
-      
-      db.query(query, values, (error, result) => {
-        if (error) {
-          return res.status(500).json({ error: error.stack })
-        }
-
-        return res.status(201).json(result.rows[0])
-      })
-    }
-  } catch (error) {
-    res.status(500).json({ error: error.stack })
-  }
+  if(errors.length) return res.status(httpStatusCode).json({ errors })
+  
+  return res.status(httpStatusCode).json({ token, exp_time })
 })
 
 module.exports = authRouter

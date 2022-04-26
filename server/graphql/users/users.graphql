@@ -1,12 +1,34 @@
 type Query {
-  users: [User],
-  user(id: ID!): User
+  users: [User!],
+  user(id: ID!): User!,
+  userBySocialId(socialId: ID!, provider: String!): User!,
+}
+
+# make a social json column would be better than [social]id.
+type Mutation {
+  addUser(
+    # Could make a new type for user basic info
+    display_name: String!,
+    email: String!,
+    # Could make a new type for user basic info
+    password: String!
+  ): User!,
+  addSocialUser(
+    socialId: ID!
+    display_name: String!,
+    email: String!,
+    token: String!
+    provider: String!
+  ): User!
 }
 
 type User {
-  id: ID!
-  display_name: String!
-  email: String!
-  password: String!
-  created_at: String!
+  id: ID
+  googleid: ID
+  display_name: String
+  email: String
+  password: String
+  created_at: Timestamp
+  updated_at: Timestamp
+  token: String
 }
