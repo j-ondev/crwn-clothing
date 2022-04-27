@@ -26,11 +26,7 @@ authRouter.post('/authenticate', async (req, res) => {
     expiresIn: exp_time,
   })
 
-  let errors = []
-  let httpStatusCode = 500
-
-  if (user) httpStatusCode = 200
-  else {
+  if (!user) {
     const result = await addSocialUser({
       socialId: googleid,
       display_name,
@@ -38,15 +34,15 @@ authRouter.post('/authenticate', async (req, res) => {
       provider: 'google'
     })
 
-    if (result && result.errors)
-      result.errors.map(error => errors.push(error.message))
-    else
-      httpStatusCode = 201
+    if (result && result.errors) {
+      const errors = result.errors.map(error => error.message)
+      return res.status(500).json({ errors })
+    }
+
+    return res.status(201).json({ token, exp_time })
   }
 
-  if(errors.length) return res.status(httpStatusCode).json({ errors })
-  
-  return res.status(httpStatusCode).json({ token, exp_time })
+  return res.status(200).json({ token, exp_time })
 })
 
 module.exports = authRouter
