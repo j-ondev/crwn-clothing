@@ -3,16 +3,16 @@ const jwt = require('jsonwebtoken')
 
 const { getEnv } = require('../../helpers/config')
 const { verifyGoogleToken } = require('../../helpers/auth')
-const { getUserBySocialId, addSocialUser, updateUserToken } = require('../../graphql/users/users.model')
+const { getUserBySocialId, addSocialUser } = require('../../graphql/users/users.model')
 
 const isDevelopment = getEnv(['NODE_ENV'])[0] === 'development'
 const [ secretOrPrivate ] = getEnv([isDevelopment ? 'JWT_SECRET_DEV' : 'JWT_SECRET_PROD'])
 
 authRouter.post('/authenticate', async (req, res) => {
-  const credentials = await verifyGoogleToken(req.body.credential)
-  if (credentials.error) res.status(500).json(credentials.error)
+  const payload = await verifyGoogleToken(req.body.credential)
+  if (credentials.error) res.status(500).json(payload.error)
   
-  const { googleid, display_name, email, exp_time } = credentials
+  const { googleid, display_name, email, exp_time } = payload
 
   const user = await getUserBySocialId({
     socialId: googleid, provider: 'google'
@@ -29,22 +29,12 @@ authRouter.post('/authenticate', async (req, res) => {
   let errors = []
   let httpStatusCode = 500
 
-  if (user) {
-    const result = await updateUserToken({
-      id: user.id,
-      token
-    })
-
-    if (result && result.errors)
-      result.errors.map(error => errors.push(error.message))
-    else
-      httpStatusCode = 200
-  } else {
+  if (user) httpStatusCode = 200
+  else {
     const result = await addSocialUser({
       socialId: googleid,
       display_name,
       email,
-      token,
       provider: 'google'
     })
 

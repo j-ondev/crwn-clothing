@@ -33,18 +33,10 @@ exports.getUserBySocialId = async ({ socialId, provider }) => {
 //   return Query(query.text, query.values)
 // }
 
-exports.addSocialUser = async ({ socialId, display_name, email, token, provider }) => {
-  const columns = [`${provider}id`, 'display_name', 'email', 'token']
-  query.text = `INSERT INTO users(${columns}) VALUES($1, $2, $3, $4)`
-  query.values = [socialId, display_name, email, token]
-
-  return await (Query(query.text, query.values))[0]
-}
-
-exports.updateUserToken = async ({ id, token }) => {
-  const updateTime = pgDate(Date.now())
-  query.text = `UPDATE users SET token = $1, updated_at = '${updateTime}' WHERE id = $2`
-  query.values = [token, id]
+exports.addSocialUser = async ({ socialId, display_name, email, provider }) => {
+  const columns = [`${provider}id`, 'display_name', 'email']
+  query.text = `INSERT INTO users(${columns}) VALUES($1, $2, $3)`
+  query.values = [socialId, display_name, email]
 
   return await (Query(query.text, query.values))[0]
 }

@@ -17,7 +17,6 @@ type Mutation {
     socialId: ID!
     display_name: String!,
     email: String!,
-    token: String!
     provider: String!
   ): User!
 }
@@ -30,5 +29,4 @@ type User {
   password: String
   created_at: Timestamp
   updated_at: Timestamp
-  token: String
 }
