@@ -2,22 +2,17 @@ const authRouter = require('express').Router()
 const jwt = require('jsonwebtoken')
 
 const { getEnv } = require('../../helpers/config')
-const verifyToken = require('../../helpers/googleAuth')
+const { verifyGoogleToken } = require('../../helpers/auth')
 const { getUserBySocialId, addSocialUser, updateUserToken } = require('../../graphql/users/users.model')
 
 const isDevelopment = getEnv(['NODE_ENV'])[0] === 'development'
 const [ secretOrPrivate ] = getEnv([isDevelopment ? 'JWT_SECRET_DEV' : 'JWT_SECRET_PROD'])
 
-authRouter.post('/verify', (req, res) => {
-  const { credential } = req.body
-  
-  verifyToken(credential)
-    .then(user => res.status(200).json(user))
-    .catch(err => res.status(500).json({ error: err }))
-})
-
 authRouter.post('/authenticate', async (req, res) => {
-  const { googleid, display_name, email, exp_time } = req.body
+  const credentials = await verifyGoogleToken(req.body.credential)
+  if (credentials.error) res.status(500).json(credentials.error)
+  
+  const { googleid, display_name, email, exp_time } = credentials
 
   const user = await getUserBySocialId({
     socialId: googleid, provider: 'google'
