@@ -18,7 +18,7 @@ authRouter.post('/authenticate', async (req, res) => {
     socialId: googleid, provider: 'google'
   })
 
-  const token = jwt.sign({
+  const accessToken = jwt.sign({
     name: user.display_name,
     email: user.email
   }, secretOrPrivate, {
@@ -39,10 +39,10 @@ authRouter.post('/authenticate', async (req, res) => {
       return res.status(500).json({ errors })
     }
 
-    return res.status(201).json({ token, exp_time })
+    return res.status(201).json({ accessToken, exp_time })
   }
 
-  return res.status(200).json({ token, exp_time })
+  return res.status(200).json({ accessToken, exp_time })
 })
 
 module.exports = authRouter
