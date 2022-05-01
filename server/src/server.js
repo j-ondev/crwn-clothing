@@ -5,7 +5,7 @@ require('dotenv').config()
 const { getEnv } = require('../helpers/config')
 const app = require('./app')
 const { startApolloServer } = require('./apollo')
-const PORT = +getEnv(['PORT']) || 4000
+const PORT = +getEnv('PORT') || 4000
 
 async function startServer() {
   await startApolloServer(app)

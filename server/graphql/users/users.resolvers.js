@@ -2,19 +2,19 @@ const usersModel = require('./users.model')
 
 module.exports = {
   Query: {
-    users: () => {
-      return usersModel.getAllUsers()
+    users: async () => {
+      return await usersModel.getAllUsers()
     },
-    user: (_, args) => {
-      return usersModel.getUserById(args.id)
+    user: async (_, args) => {
+      return await usersModel.getUserById(args)
     },
-    userBySocialId: (_, args) => {
-      return usersModel.getUserBySocialId(args)
+    socialUser: async (_, { identifier, provider }) => {
+      return await usersModel.getSocialUser(identifier, provider)
     }
   },
   Mutation: {
-    addSocialUser: (_, args) => {
-      return usersModel.addSocialUser(args)
+    AddGoogleUser: async (_, args) => {
+      return await usersModel.addGoogleUser(args)
     }
   }
 }

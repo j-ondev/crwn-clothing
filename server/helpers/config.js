@@ -1,9 +1,8 @@
-function getEnv(env_vars) {
-  return env_vars.map(
-    (variable) => process.env[variable]
-  )
-}
-
-module.exports = {
-  getEnv
+exports.getEnv = (env_vars) => {
+  if(Array.isArray(env_vars))
+    return env_vars.map(
+      (variable) => process.env[variable]
+    )
+  else
+    return process.env[env_vars]
 }

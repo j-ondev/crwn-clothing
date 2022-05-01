@@ -11,16 +11,16 @@ exports.getAllUsers = async () => {
   return await Query(query.text)
 }
 
-exports.getUserById = async (id) => {
+exports.getUserById = async ({ id }) => {
   query.text = 'SELECT * FROM users WHERE id = $1'
   query.values = [id]
 
   return (await Query(query.text, query.values))[0]
 }
 
-exports.getUserBySocialId = async ({ socialId, provider }) => {
+exports.getSocialUser = async (identifier, provider) => {  
   query.text = `SELECT * FROM users WHERE ${provider}id = $1`
-  query.values = [socialId]
+  query.values = [identifier]
 
   return (await Query(query.text, query.values))[0]
 }
@@ -33,10 +33,11 @@ exports.getUserBySocialId = async ({ socialId, provider }) => {
 //   return Query(query.text, query.values)
 // }
 
-exports.addSocialUser = async ({ socialId, display_name, email, provider }) => {
-  const columns = [`${provider}id`, 'display_name', 'email']
-  query.text = `INSERT INTO users(${columns}) VALUES($1, $2, $3)`
-  query.values = [socialId, display_name, email]
+exports.addGoogleUser = async ({ googleid, display_name, email }) => {
+  const columns = ['googleid', 'display_name', 'email']
+  query.text = `INSERT INTO users(${columns}) VALUES($1, $2, $3) RETURNING *`
+  query.values = [googleid, display_name, email]
 
-  return await (Query(query.text, query.values))[0]
+  const result = await Query(query.text, query.values)
+  return result
 }
