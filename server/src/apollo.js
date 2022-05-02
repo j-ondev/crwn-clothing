@@ -7,10 +7,7 @@ async function startApolloServer(app) {
     schema,
     context: async ({ req }) => {
       const token = req.headers.authorization || ''
-
       const user = await getUser(token)
-
-      if(!user) throw new AuthenticationError('You must be logged in')
 
       return { user }
     }

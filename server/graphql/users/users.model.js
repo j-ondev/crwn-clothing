@@ -1,6 +1,5 @@
 const db = require('../../services/database')
 const { ApolloError } = require('apollo-server-express')
-const { isJwt } = require('../../utils/auth')
 const { verifyToken } = require('../../helpers/auth')
 
 const query = {
@@ -20,6 +19,8 @@ exports.getAllUsers = async () => {
 }
 
 exports.getUser = async (idOrToken) => {
+  if(!idOrToken) return
+
   const token = verifyToken(idOrToken)
   const id = token?.sub || idOrToken
 

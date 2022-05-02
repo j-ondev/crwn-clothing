@@ -3,7 +3,11 @@
   "version": "0.0.0",
   "description": "Crown Clothing eCommerce",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "server": "yarn --cwd server dev",
+    "client": "yarn --cwd client start",
+    "initiate": "run-p server client"
+  },
   "author": "João Zorzetti",
   "license": "MIT",
   "devDependencies": {
