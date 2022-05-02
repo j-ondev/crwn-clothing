@@ -1,23 +1,26 @@
 type Query {
-  users: [User],
-  user(id: ID!): User,
-  socialUser(identifier: ID!, provider: String!): User,
+  Users: [User],
+  User(idOrToken: ID!): User,
+  SocialUser(identifier: ID!, provider: String!): User,
 }
 
 # make a social json column would be better than [social]id.
 type Mutation {
-  addUser(
-    # Could make a new type for user basic info
+  AddUser(
     display_name: String!,
-    email: String!,
-    # Could make a new type for user basic info
+    email: String!
     password: String!
-  ): User,
-  AddGoogleUser(
-    googleid: ID!
-    display_name: String!,
-    email: String!,
-  ): User
+  ): JsonWebToken,
+  Login(
+    email: String!
+    password: String!
+  ): JsonWebToken,
+  SignUpGoogle(
+    credential: String!
+  ): JsonWebToken,
+  SignInGoogle(
+    credential: String!
+  ): JsonWebToken
 }
 
 type User {
@@ -28,4 +31,9 @@ type User {
   password: String
   created_at: Timestamp!
   updated_at: Timestamp
+}
+
+type JsonWebToken {
+  access_token: String!
+  exp: String!
 }
