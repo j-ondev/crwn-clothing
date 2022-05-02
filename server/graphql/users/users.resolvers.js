@@ -39,7 +39,7 @@ module.exports = {
       return token
     },
     Login: async(_, { email, password }) => {
-      const user = await usersModel.authUser(email, password)
+      const user = await usersModel.getUser({ email, password })
 
       if (!user) throw new AuthenticationError('Invalid username or password')
       const token = generateToken(user)
@@ -50,8 +50,8 @@ module.exports = {
       const validCredential = isJwt(credential)
 
       if (validCredential) {
-        const payload = await verifyGoogleToken(credential)
-        const user = await usersModel.addGoogleUser(payload)
+        const { googleid, display_name, email } = await verifyGoogleToken(credential)
+        const user = await usersModel.addUser({ googleid, display_name, email })
 
         const token = generateToken(user)
 

@@ -1,7 +1,7 @@
 type Query {
   Users: [User],
-  User(idOrToken: ID!): User,
-  SocialUser(identifier: ID!, provider: String!): User,
+  User(conditions: UserInput!): User,
+  SocialUser(socialId: ID!, provider: String!): User,
 }
 
 # make a social json column would be better than [social]id.
@@ -30,6 +30,16 @@ type User {
   email: String!
   password: String
   created_at: Timestamp!
+  updated_at: Timestamp
+}
+
+input UserInput {
+  id: ID
+  googleid: ID
+  display_name: String
+  email: String
+  password: String
+  created_at: Timestamp
   updated_at: Timestamp
 }
 

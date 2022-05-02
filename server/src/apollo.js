@@ -6,10 +6,10 @@ async function startApolloServer(app) {
   const apolloServer = new ApolloServer({
     schema,
     context: async ({ req }) => {
-      const token = req.headers.authorization || ''
-      const user = await getUser(token)
+      // const token = req.headers.authorization || ''
+      // const user = await getUser(token)
 
-      return { user }
+      // return { user }
     }
   })
 
