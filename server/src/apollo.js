@@ -1,6 +1,6 @@
-const { ApolloServer, AuthenticationError } = require('apollo-server-express')
-const schema = require('../graphql/schema')
-const { getUser } = require('../graphql/users/users.model')
+import { ApolloServer, AuthenticationError } from 'apollo-server-express'
+import schema from '../graphql/schema.js'
+import { getUser } from '../graphql/users/users.model.js'
 
 async function startApolloServer(app) {
   const apolloServer = new ApolloServer({
@@ -8,9 +8,8 @@ async function startApolloServer(app) {
     context: async ({ req }) => {
       // const token = req.headers.authorization || ''
       // const user = await getUser(token)
-
       // return { user }
-    }
+    },
   })
 
   await apolloServer.start()
@@ -18,4 +17,4 @@ async function startApolloServer(app) {
   console.log(`Initialized apollo server...`)
 }
 
-module.exports = { startApolloServer }
+export { startApolloServer }

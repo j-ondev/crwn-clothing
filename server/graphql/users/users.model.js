@@ -1,7 +1,7 @@
-const { ApolloError } = require('apollo-server-express')
-const { Select, Insert } = require('../../utils/queries')
+import { ApolloError } from 'apollo-server-express'
+import { Select, Insert } from '../../utils/queries.js'
 
-exports.getAllUsers = async () => {  
+const getAllUsers = async () => {
   try {
     const result = await Select('users', null, 'ORDER BY id ASC')
     return result.rows
@@ -10,7 +10,7 @@ exports.getAllUsers = async () => {
   }
 }
 
-exports.getUser = async (conditions) => {
+const getUser = async (conditions) => {
   try {
     const result = await Select('users', conditions)
     return result.rows[0]
@@ -19,10 +19,10 @@ exports.getUser = async (conditions) => {
   }
 }
 
-exports.getSocialUser = async (socialId, provider) => {  
+const getSocialUser = async (socialId, provider) => {
   try {
     const result = await Select('users', {
-      [`${provider}id`]: socialId
+      [`${provider}id`]: socialId,
     })
     return result.rows[0]
   } catch (err) {
@@ -30,7 +30,7 @@ exports.getSocialUser = async (socialId, provider) => {
   }
 }
 
-exports.addUser = async (conditions) => {  
+const addUser = async (conditions) => {
   try {
     const result = await Insert('users', conditions)
     return result.rows[0]
@@ -38,3 +38,8 @@ exports.addUser = async (conditions) => {
     throw new ApolloError(err.stack)
   }
 }
+
+const usersModel = { getAllUsers, getUser, getSocialUser, addUser }
+
+export { getAllUsers, getUser, getSocialUser, addUser }
+export default usersModel

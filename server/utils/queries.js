@@ -1,7 +1,7 @@
-const db = require('../services/database')
-const { verifyToken } = require('../helpers/auth')
+import db from '../services/database.js'
+import { verifyToken } from '../helpers/auth.js'
 
-exports.Select = async (table, conditions, extra) => {
+export const Select = async (table, conditions, extra) => {
   let query = `SELECT * FROM ${table}`
   let values = []
 
@@ -14,14 +14,13 @@ exports.Select = async (table, conditions, extra) => {
       if (column === 'token') {
         const payload = verifyToken(value)
 
-        if(payload) query += `id = ${payload.sub}`
+        if (payload) query += `id = ${payload.sub}`
         else addComma = false
       } else {
         query += `${column} = $${index + 1}`
       }
 
-      if(index + 1 !== array.length && addComma)
-        query += ' AND '
+      if (index + 1 !== array.length && addComma) query += ' AND '
 
       values.push(value)
     })
@@ -32,20 +31,20 @@ exports.Select = async (table, conditions, extra) => {
   return await db.query(query, values)
 }
 
-exports.Insert = async (table, conditions, extra) => {
+export const Insert = async (table, conditions, extra) => {
   if (conditions) {
     let columns = Object.keys(conditions)
     let values = Object.values(conditions)
     let query = `INSERT INTO ${table}(${columns}) VALUES(`
 
     for (let index = 1; index <= columns.length; index++) {
-      query += '$'+index
+      query += '$' + index
 
-      if(index !== columns.length) query += ','
+      if (index !== columns.length) query += ','
     }
 
     query += ')'
-    
+
     if (extra) query += ` ${extra}`
 
     query += ' RETURNING *'

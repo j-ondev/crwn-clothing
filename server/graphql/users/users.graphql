@@ -1,26 +1,19 @@
 type Query {
-  Users: [User],
-  User(conditions: UserInput!): User,
-  SocialUser(socialId: ID!, provider: String!): User,
+  Users: [User]
+  User(conditions: UserInput!): User
+  SocialUser(socialId: ID!, provider: String!): User
 }
 
 # make a social json column would be better than [social]id.
 type Mutation {
   AddUser(
-    display_name: String!,
+    display_name: String!
     email: String!
     password: String!
-  ): JsonWebToken,
-  SignIn(
-    email: String!
-    password: String!
-  ): JsonWebToken,
-  SignUpGoogle(
-    credential: String!
-  ): JsonWebToken,
-  SignInGoogle(
-    credential: String!
   ): JsonWebToken
+  SignIn(email: String!, password: String!): JsonWebToken
+  SignUpGoogle(credential: String!): JsonWebToken
+  SignInGoogle(credential: String!): JsonWebToken
 }
 
 type User {

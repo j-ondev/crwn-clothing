@@ -1,20 +1,28 @@
-const fs = require('fs')
-const path = require('path')
-require('dotenv').config()
+import 'dotenv/config'
 
-const { getEnv } = require('../helpers/config')
-const app = require('./app')
-const { startApolloServer } = require('./apollo')
+import fs from 'fs'
+import https from 'https'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+import { getEnv } from '../helpers/config.js'
+import app from './app.js'
+import { startApolloServer } from './apollo.js'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const PORT = +getEnv('PORT') || 4000
 
 async function startServer() {
   await startApolloServer(app)
-  
-  const server = require('https').createServer({
-    key: fs.readFileSync(path.join(__dirname, '..', 'certs', 'key.pem')),
-    cert: fs.readFileSync(path.join(__dirname, '..', 'certs', 'cert.pem'))
-  }, app)
-  
+
+  const server = https.createServer(
+    {
+      key: fs.readFileSync(path.join(__dirname, '..', 'certs', 'key.pem')),
+      cert: fs.readFileSync(path.join(__dirname, '..', 'certs', 'cert.pem')),
+    },
+    app
+  )
+
   server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}...`)
   })

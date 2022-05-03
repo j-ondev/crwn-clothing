@@ -1,5 +1,5 @@
-const { timestampScalar } = require('./scalars.def')
+import { timestampScalar } from './scalars.config.js'
 
-module.exports = {
-  Timestamp: timestampScalar
+export default {
+  Timestamp: timestampScalar,
 }

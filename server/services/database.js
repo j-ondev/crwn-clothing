@@ -1,5 +1,7 @@
-const Pool = require('pg').Pool
+import pg from 'pg'
+
+const { Pool } = pg
 
 const db = new Pool()
 
-module.exports = db
+export default db

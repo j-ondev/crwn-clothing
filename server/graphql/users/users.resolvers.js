@@ -1,14 +1,18 @@
-const { UserInputError, AuthenticationError, ForbiddenError } = require('apollo-server-express')
+import {
+  UserInputError,
+  AuthenticationError,
+  ForbiddenError,
+} from 'apollo-server-express'
 
-const usersModel = require('./users.model')
-const {
+import usersModel from './users.model.js'
+import {
   verifyGoogleToken,
   generateToken,
-  hasPermissions
-} = require('../../helpers/auth')
-const { isJwt } = require('../../utils/auth')
+  hasPermissions,
+} from '../../helpers/auth.js'
+import { isJwt } from '../../utils/auth.js'
 
-module.exports = {
+export default {
   Query: {
     Users: async (_, __, ctx) => {
       // if (!ctx.user) throw new AuthenticationError('You must be logged in')
@@ -25,7 +29,7 @@ module.exports = {
     SocialUser: async (_, { socialId, provider }) => {
       const user = await usersModel.getSocialUser(socialId, provider)
       return user
-    }
+    },
   },
   Mutation: {
     AddUser: async (_, args) => {
@@ -50,7 +54,9 @@ module.exports = {
       const validCredential = isJwt(credential)
 
       if (validCredential) {
-        const { googleid, display_name, email } = await verifyGoogleToken(credential)
+        const { googleid, display_name, email } = await verifyGoogleToken(
+          credential
+        )
         const user = await usersModel.addUser({ googleid, display_name, email })
 
         const token = generateToken(user)
@@ -71,6 +77,6 @@ module.exports = {
 
         return token
       } else throw new UserInputError('Invalid google credential format')
-    }
-  }
+    },
+  },
 }

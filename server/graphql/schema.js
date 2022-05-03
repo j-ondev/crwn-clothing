@@ -1,8 +1,18 @@
-const path = require('path')
-const { loadFilesSync } = require('@graphql-tools/load-files')
-const { makeExecutableSchema } = require('@graphql-tools/schema')
+import merge from 'lodash/merge.js'
+import { loadSchema } from '@graphql-tools/load'
+import { makeExecutableSchema } from '@graphql-tools/schema'
+import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader'
 
-module.exports = makeExecutableSchema({
-  typeDefs: loadFilesSync(path.join(__dirname, '**/*.graphql')),
-  resolvers: loadFilesSync(path.join(__dirname, '**/*.resolvers.js'))
+import scalarsResolvers from './scalars/scalars.resolvers.js'
+import usersResolvers from './users/users.resolvers.js'
+
+const typeDefs = await loadSchema('**/*.graphql', {
+  loaders: [new GraphQLFileLoader()],
+})
+
+const resolvers = merge(scalarsResolvers, usersResolvers)
+
+export default makeExecutableSchema({
+  typeDefs,
+  resolvers,
 })
