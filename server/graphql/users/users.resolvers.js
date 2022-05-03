@@ -18,11 +18,8 @@ module.exports = {
       const user = await usersModel.getAllUsers()
       return user
     },
-    User: async (_, args) => {
-      const id = Math.abs(+args.id)
-      if (id < 1) throw new UserInputError('Invalid argument value')
-
-      const user = await usersModel.getUser(id)
+    User: async (_, { conditions }) => {
+      const user = await usersModel.getUser(conditions)
       return user
     },
     SocialUser: async (_, { socialId, provider }) => {
@@ -31,15 +28,18 @@ module.exports = {
     }
   },
   Mutation: {
-    AddUser: async(_, args) => {
+    AddUser: async (_, args) => {
       const user = await usersModel.addUser(args)
 
       const token = generateToken(user)
 
       return token
     },
-    Login: async(_, { email, password }) => {
-      const user = await usersModel.getUser({ email, password })
+    SignIn: async (_, args) => {
+      if (!args.email || !args.password)
+        throw new UserInputError('Email and password cannot be empty')
+
+      const user = await usersModel.getUser(args)
 
       if (!user) throw new AuthenticationError('Invalid username or password')
       const token = generateToken(user)

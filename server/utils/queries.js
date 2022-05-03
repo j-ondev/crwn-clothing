@@ -21,7 +21,7 @@ exports.Select = async (table, conditions, extra) => {
       }
 
       if(index + 1 !== array.length && addComma)
-        query += ', '
+        query += ' AND '
 
       values.push(value)
     })
@@ -43,10 +43,13 @@ exports.Insert = async (table, conditions, extra) => {
 
       if(index !== columns.length) query += ','
     }
+
+    query += ')'
     
     if (extra) query += ` ${extra}`
 
     query += ' RETURNING *'
+
     return await db.query(query, values)
   }
 

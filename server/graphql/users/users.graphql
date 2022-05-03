@@ -11,7 +11,7 @@ type Mutation {
     email: String!
     password: String!
   ): JsonWebToken,
-  Login(
+  SignIn(
     email: String!
     password: String!
   ): JsonWebToken,
