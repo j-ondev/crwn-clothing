@@ -1,9 +1,3 @@
-import {
-  UserInputError,
-  AuthenticationError,
-  ForbiddenError,
-} from 'apollo-server-express'
-
 import usersModel from './users.model.js'
 import {
   verifyGoogleToken,
@@ -38,7 +32,17 @@ export default {
     },
     SocialUser: async (_, { socialId, provider }) => {
       const user = await usersModel.getSocialUser(socialId, provider)
-      return user
+
+      if (user)
+        return {
+          __typename: 'User',
+          ...user,
+        }
+      else
+        return {
+          __typename: 'UserError',
+          code: 'user/not-found',
+        }
     },
   },
   Mutation: {
@@ -47,18 +51,45 @@ export default {
 
       const token = generateToken(user)
 
-      return token
+      if (token)
+        return {
+          __typename: 'JsonWebToken',
+          ...token,
+        }
+      else
+        return {
+          __typename: 'UserError',
+          code: 'user/invalid-token',
+        }
     },
     SignIn: async (_, args) => {
       if (!args.email || !args.password)
-        throw new UserInputError('Email and password cannot be empty')
+        return {
+          __type: 'UserError',
+          code: 'user/invalid-request',
+          message: 'Username and password cannot be empty',
+        }
 
       const user = await usersModel.getUser(args)
 
-      if (!user) return new AuthenticationError('Invalid username or password')
+      if (!user)
+        return {
+          __typename: 'UserError',
+          code: 'user/not-found',
+        }
+
       const token = generateToken(user)
 
-      return token
+      if (token)
+        return {
+          __typename: 'JsonWebToken',
+          ...token,
+        }
+      else
+        return {
+          __typename: 'UserError',
+          code: 'user/invalid-token',
+        }
     },
     SignUpGoogle: async (_, { credential }) => {
       const validCredential = isJwt(credential)
@@ -67,12 +98,34 @@ export default {
         const { googleid, display_name, email } = await verifyGoogleToken(
           credential
         )
+
+        if (!googleid)
+          return {
+            __typename: 'UserError',
+            code: 'user/tampered-token',
+          }
+
         const user = await usersModel.addUser({ googleid, display_name, email })
 
         const token = generateToken(user)
 
-        return token
-      } else throw new UserInputError('Invalid google credential format')
+        if (token)
+          return {
+            __typename: 'JsonWebToken',
+            ...token,
+          }
+        else
+          return {
+            __typename: 'UserError',
+            code: 'user/invalid-token',
+          }
+      } else {
+        return {
+          __typename: 'UserError',
+          code: 'user/invalid-request',
+          message: 'Invalid google credential format',
+        }
+      }
     },
     SignInGoogle: async (_, { credential }) => {
       const validCredential = isJwt(credential)
@@ -81,12 +134,31 @@ export default {
         const payload = await verifyGoogleToken(credential)
         const user = await usersModel.getSocialUser(payload.googleid, 'google')
 
-        if (!user) return null
+        if (!user)
+          return {
+            __typename: 'UserError',
+            code: 'user/not-found',
+          }
 
         const token = generateToken(user)
 
-        return token
-      } else throw new UserInputError('Invalid google credential format')
+        if (token)
+          return {
+            __typename: 'JsonWebToken',
+            ...token,
+          }
+        else
+          return {
+            __typename: 'UserError',
+            code: 'user/invalid-token',
+          }
+      } else {
+        return {
+          __typename: 'UserError',
+          code: 'user/invalid-request',
+          message: 'Invalid google credential format',
+        }
+      }
     },
   },
 }

@@ -33,6 +33,8 @@ export const verifyGoogleToken = async (token) => {
 }
 
 export const generateToken = ({ display_name: name, email, id: subject }) => {
+  if (!name || !email || !subject) return null
+
   const access_token = jwt.sign(
     {
       name,
