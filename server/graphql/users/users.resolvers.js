@@ -19,12 +19,22 @@ export default {
       // if (!hasPermissions(ctx.user, { users: 'R' } ))
       //   throw new ForbiddenError(`You don't have enough permission`)
 
-      const user = await usersModel.getAllUsers()
-      return user
+      const users = await usersModel.getAllUsers()
+      return users
     },
     User: async (_, { conditions }) => {
       const user = await usersModel.getUser(conditions)
-      return user
+
+      if (user)
+        return {
+          __typename: 'User',
+          ...user,
+        }
+      else
+        return {
+          __typename: 'UserError',
+          code: 'user/not-found',
+        }
     },
     SocialUser: async (_, { socialId, provider }) => {
       const user = await usersModel.getSocialUser(socialId, provider)
@@ -45,7 +55,7 @@ export default {
 
       const user = await usersModel.getUser(args)
 
-      if (!user) throw new AuthenticationError('Invalid username or password')
+      if (!user) return new AuthenticationError('Invalid username or password')
       const token = generateToken(user)
 
       return token

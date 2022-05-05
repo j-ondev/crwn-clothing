@@ -1,7 +1,7 @@
 type Query {
   Users: [User]
-  User(conditions: UserInput!): User
-  SocialUser(socialId: ID!, provider: String!): User
+  User(conditions: UserInput!): UserResult
+  SocialUser(socialId: ID!, provider: String!): UserResult
 }
 
 # make a social json column would be better than [social]id.
@@ -10,10 +10,10 @@ type Mutation {
     display_name: String!
     email: String!
     password: String!
-  ): JsonWebToken
-  SignIn(email: String!, password: String!): JsonWebToken
-  SignUpGoogle(credential: String!): JsonWebToken
-  SignInGoogle(credential: String!): JsonWebToken
+  ): UserInputResult
+  SignIn(email: String!, password: String!): UserInputResult
+  SignUpGoogle(credential: String!): UserInputResult
+  SignInGoogle(credential: String!): UserInputResult
 }
 
 type User {
@@ -25,6 +25,13 @@ type User {
   created_at: Timestamp!
   updated_at: Timestamp
 }
+
+type UserError implements Error {
+  code: String!
+  message: String
+}
+
+union UserResult = User | UserError
 
 input UserInput {
   id: ID
@@ -40,3 +47,5 @@ type JsonWebToken {
   access_token: String!
   exp: String!
 }
+
+union UserInputResult = JsonWebToken | UserError
