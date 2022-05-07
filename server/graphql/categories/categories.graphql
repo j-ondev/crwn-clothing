@@ -1,0 +1,23 @@
+type Query {
+  Categories: [Category]
+  Category(filter: CategoryInput!): Category
+}
+
+type Category {
+  id: ID!
+  title: ID!
+  active: Boolean!
+}
+
+type CategoryError implements Error {
+  code: String!
+  message: String
+}
+
+union CategoryResult = Category | CategoryError
+
+input CategoryInput {
+  id: ID
+  title: ID
+  active: Boolean
+}

@@ -1,6 +1,6 @@
 type Query {
   Users: [User]
-  User(conditions: UserInput!): UserResult
+  User(filter: UserInput!): UserArrayResult
   SocialUser(socialId: ID!, provider: String!): UserResult
 }
 
@@ -17,7 +17,7 @@ type Mutation {
 }
 
 type User {
-  id: ID
+  id: ID!
   googleid: ID
   display_name: String!
   email: String!
@@ -26,12 +26,17 @@ type User {
   updated_at: Timestamp
 }
 
+type UserArray {
+  users: [User!]!
+}
+
 type UserError implements Error {
   code: String!
   message: String
 }
 
 union UserResult = User | UserError
+union UserArrayResult = UserArray | UserError
 
 input UserInput {
   id: ID

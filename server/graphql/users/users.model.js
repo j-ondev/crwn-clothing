@@ -10,10 +10,10 @@ const getAllUsers = async () => {
   }
 }
 
-const getUser = async (conditions) => {
+const getUser = async (filter) => {
   try {
-    const result = await Select('users', conditions)
-    return result.rows[0]
+    const result = await Select('users', filter)
+    return result.rows
   } catch (err) {
     throw new ApolloError(err.stack)
   }
@@ -30,9 +30,9 @@ const getSocialUser = async (socialId, provider) => {
   }
 }
 
-const addUser = async (conditions) => {
+const addUser = async (params) => {
   try {
-    const result = await Insert('users', conditions)
+    const result = await Insert('users', params)
     return result.rows[0]
   } catch (err) {
     throw new ApolloError(err.stack)

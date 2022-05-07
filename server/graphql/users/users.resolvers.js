@@ -14,15 +14,18 @@ export default {
       //   throw new ForbiddenError(`You don't have enough permission`)
 
       const users = await usersModel.getAllUsers()
+
+      if (!users.length) return null
+
       return users
     },
-    User: async (_, { conditions }) => {
-      const user = await usersModel.getUser(conditions)
+    User: async (_, { filter }) => {
+      const users = await usersModel.getUser(filter)
 
-      if (user)
+      if (users.length)
         return {
-          __typename: 'User',
-          ...user,
+          __typename: 'UserArray',
+          users,
         }
       else
         return {
@@ -72,7 +75,7 @@ export default {
 
       const user = await usersModel.getUser(args)
 
-      if (!user)
+      if (!user.length === 1)
         return {
           __typename: 'UserError',
           code: 'user/not-found',

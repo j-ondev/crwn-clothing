@@ -1,0 +1,32 @@
+type Query {
+  Products: [Product]
+  Product(filter: ProductInput): ProductArrayResult
+}
+
+type Product {
+  id: ID!
+  category: ID!
+  name: String!
+  price: Float!
+  image_url: String
+}
+
+type ProductArray {
+  products: [Product!]!
+}
+
+type ProductError implements Error {
+  code: String!
+  message: String
+}
+
+union ProductResult = Product | ProductError
+union ProductArrayResult = ProductArray | ProductError
+
+input ProductInput {
+  id: ID
+  category: ID
+  name: String
+  price: Float
+  image_url: String
+}
