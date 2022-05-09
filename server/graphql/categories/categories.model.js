@@ -3,7 +3,7 @@ import { Select } from '../../utils/queries.js'
 
 const getAllCategories = async () => {
   try {
-    const result = await Select('category', null, 'ORDER BY title ASC')
+    const result = await Select('categories', null, 'ORDER BY title ASC')
     return result.rows
   } catch (err) {
     throw new ApolloError(err)
@@ -12,7 +12,7 @@ const getAllCategories = async () => {
 
 const getCategory = async (filter) => {
   try {
-    const result = await Select('category', filter)
+    const result = await Select('categories', filter)
     return result.rows
   } catch (err) {
     throw new ApolloError(err)

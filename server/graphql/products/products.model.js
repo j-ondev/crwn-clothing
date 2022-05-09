@@ -1,5 +1,5 @@
 import { ApolloError } from 'apollo-server-express'
-import { Select } from '../../utils/queries.js'
+import { Select, CustomQuery } from '../../utils/queries.js'
 
 const getAllProducts = async () => {
   try {
@@ -12,7 +12,17 @@ const getAllProducts = async () => {
 
 const getProduct = async (filter) => {
   try {
-    const result = await Select('products', filter)
+    const result = await CustomQuery(
+      `
+      SELECT
+        p.*, c.title AS category_name
+      FROM
+        products p
+      INNER JOIN categories c
+        ON p.category = c.id
+    `,
+      [filter, 'p']
+    )
     return result.rows
   } catch (err) {
     throw new ApolloError(err)

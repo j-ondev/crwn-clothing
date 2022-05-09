@@ -6,6 +6,7 @@ type Query {
 type Product {
   id: ID!
   category: ID!
+  category_name: String
   name: String!
   price: Float!
   image_url: String

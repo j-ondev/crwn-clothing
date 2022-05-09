@@ -6,12 +6,18 @@ import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader'
 import scalarsResolvers from './scalars/scalars.resolvers.js'
 import usersResolvers from './users/users.resolvers.js'
 import productsResolvers from './products/products.resolvers.js'
+import categoriesResolvers from './categories/categories.resolvers.js'
 
 const typeDefs = await loadSchema('**/*.graphql', {
   loaders: [new GraphQLFileLoader()],
 })
 
-const resolvers = merge(scalarsResolvers, usersResolvers, productsResolvers)
+const resolvers = merge(
+  scalarsResolvers,
+  usersResolvers,
+  productsResolvers,
+  categoriesResolvers
+)
 
 export default makeExecutableSchema({
   typeDefs,

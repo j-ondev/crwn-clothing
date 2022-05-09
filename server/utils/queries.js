@@ -54,3 +54,23 @@ export const Insert = async (table, conditions, extra) => {
 
   return
 }
+
+export const CustomQuery = async (query, conditions) => {
+  let values = []
+
+  if (conditions) {
+    query += ' WHERE '
+    Object.entries(conditions[0]).forEach((condition, index, array) => {
+      const [column, value] = condition
+
+      let addComma = true
+      query += `${conditions[1]}.${column} = $${index + 1}`
+
+      if (index + 1 !== array.length && addComma) query += ' AND '
+
+      values.push(value)
+    })
+  }
+
+  return await db.query(query, values)
+}
