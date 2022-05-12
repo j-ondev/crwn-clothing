@@ -73,7 +73,7 @@ export default {
           message: 'Username and password cannot be empty',
         }
 
-      const user = await usersModel.getUser(args)
+      const user = (await usersModel.getUser(args))[0]
 
       if (!user.length === 1)
         return {
@@ -82,6 +82,9 @@ export default {
         }
 
       const token = generateToken(user)
+
+      console.log(user)
+      console.log(token)
 
       if (token)
         return {
