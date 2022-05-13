@@ -83,9 +83,6 @@ export default {
 
       const token = generateToken(user)
 
-      console.log(user)
-      console.log(token)
-
       if (token)
         return {
           __typename: 'JsonWebToken',
