@@ -14,7 +14,7 @@ export const Select = async (table, conditions, extra) => {
       if (column === 'token') {
         const payload = verifyToken(value)
 
-        if (payload) query += `id = ${payload.sub}`
+        if (!payload.error) query += `id = ${payload.sub}`
         else addComma = false
       } else {
         query += `${column} = $${index + 1}`

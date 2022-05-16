@@ -2,36 +2,48 @@ import usersModel from './users.model.js'
 import {
   verifyGoogleToken,
   generateToken,
-  hasPermissions,
+  authorizeUser,
 } from '../../helpers/auth.js'
 import { isJwt } from '../../utils/auth.js'
 
 export default {
   Query: {
     Users: async (_, __, ctx) => {
-      // if (!ctx.user) throw new AuthenticationError('You must be logged in')
-      // if (!hasPermissions(ctx.user, { users: 'R' } ))
-      //   throw new ForbiddenError(`You don't have enough permission`)
+      const { rejected } = authorizeUser(ctx.user, { users: 'R' })
+      if (rejected) return { __typename: 'UserError', ...rejected }
 
       const users = await usersModel.getAllUsers()
-
       if (!users.length) return null
 
-      return users
+      return { __typename: 'UserArray', users }
     },
-    User: async (_, { filter }) => {
+    User: async (_, { filter }, ctx) => {
+      if (!ctx.user)
+        return {
+          __typename: 'UserError',
+          code: 'user/unauthorized',
+          message: 'You must be logged in to perform this action.',
+        }
+
+      let requiredPermission = { users: 'R' }
+
       const users = await usersModel.getUser(filter)
 
-      if (users.length)
-        return {
-          __typename: 'UserArray',
-          users,
-        }
-      else
+      if (users.length) {
+        if (users.length === 1 && users[0].id === ctx.user.id)
+          requiredPermission = { users: 'self' }
+
+        const { rejected } = authorizeUser(ctx.user, requiredPermission)
+
+        return rejected
+          ? { __typename: 'UserError', ...rejected }
+          : { __typename: 'UserArray', users }
+      } else {
         return {
           __typename: 'UserError',
           code: 'user/not-found',
         }
+      }
     },
     SocialUser: async (_, { socialId, provider }) => {
       const user = await usersModel.getSocialUser(socialId, provider)
@@ -162,6 +174,27 @@ export default {
           message: 'Invalid google credential format',
         }
       }
+    },
+    RenewToken: async (_, __, ctx) => {
+      if (!ctx.user)
+        return {
+          __typename: 'UserError',
+          code: 'user/unauthorized',
+          message: 'You must be logged in to perform this action.',
+        }
+
+      const token = generateToken(ctx.user)
+
+      if (token)
+        return {
+          __typename: 'JsonWebToken',
+          ...token,
+        }
+      else
+        return {
+          __typename: 'UserError',
+          code: 'user/invalid-token',
+        }
     },
   },
 }

@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken'
 import { OAuth2Client } from 'google-auth-library'
-import { isJwt } from '../utils/auth.js'
 
 import { getEnv } from './config.js'
 
@@ -56,17 +55,53 @@ export const generateToken = ({ display_name: name, email, id: subject }) => {
 }
 
 export const verifyToken = (token) => {
-  if (!isJwt(token)) return null
+  return jwt.verify(token, secretOrPrivate, (err, decoded) => {
+    if (err) return { error: err }
 
-  return jwt.verify(token, secretOrPrivate)
+    return decoded
+  })
 }
 
-export const hasPermissions = ({ permissions }, required) => {
-  permissions = JSON.parse(permissions)
+export const hasPermissions = (user, requestedPermissions) => {
+  const permissions = user.permissions
 
-  const grantAccess = Object.entries(required).every(([k, v]) => {
-    return permissions[k].includes(v) || permissions[k] === 'ALL'
-  })
+  const grantAccess = Object.entries(requestedPermissions).reduce(
+    (bool, permission) => {
+      const [k, v] = permission
+
+      if (bool === true) {
+        if (v === 'self')
+          return permissions[k].includes(v) || permissions[k].includes('R')
+
+        return permissions[k].includes(v) || permissions[k].includes('ALL')
+      }
+
+      return false
+    },
+    true
+  )
 
   return grantAccess
+}
+
+export const authorizeUser = (user, permissions) => {
+  if (!user)
+    return {
+      rejected: {
+        code: 'user/unauthorized',
+        message: 'You must be logged in to perform this action.',
+      },
+    }
+
+  if (permissions) {
+    if (!hasPermissions(user, { ...permissions, products: 'R' }))
+      return {
+        rejected: {
+          code: 'user/forbidden',
+          message: `You don't have enough permissions to perform this action.`,
+        },
+      }
+  }
+
+  return { rejected: false }
 }
