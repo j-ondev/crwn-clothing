@@ -1,5 +1,5 @@
 type Query {
-  Users: UserArrayResult
+  Users: [User]
   User(filter: UserInput!): UserArrayResult
   SocialUser(socialId: ID!, provider: String!): UserResult
 }

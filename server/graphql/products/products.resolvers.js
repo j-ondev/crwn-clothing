@@ -4,9 +4,6 @@ export default {
   Query: {
     Products: async () => {
       const products = await productsModel.getAllProducts()
-
-      if (!products.length) return null
-
       return products
     },
     Product: async (_, { filter }) => {

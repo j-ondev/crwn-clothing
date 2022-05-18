@@ -13,9 +13,7 @@ export default {
       if (rejected) return { __typename: 'UserError', ...rejected }
 
       const users = await usersModel.getAllUsers()
-      if (!users.length) return null
-
-      return { __typename: 'UserArray', users }
+      return users
     },
     User: async (_, { filter }, ctx) => {
       if (!ctx.user)

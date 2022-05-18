@@ -3,7 +3,7 @@ import { Select, CustomQuery } from '../../utils/queries.js'
 
 const getAllProducts = async () => {
   try {
-    const result = await Select('products', null, 'ORDER BY name ASC')
+    const result = await Select('products', null, 'ORDER BY id ASC')
     return result.rows
   } catch (err) {
     throw new ApolloError(err)
