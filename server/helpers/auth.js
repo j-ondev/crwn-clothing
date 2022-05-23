@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import { OAuth2Client } from 'google-auth-library'
 
-import { getEnv } from './config.js'
+import { getEnv } from '../utils/config.js'
 
 const isDevelopment = getEnv('NODE_ENV') === 'development'
 

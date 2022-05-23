@@ -5,8 +5,8 @@ import https from 'https'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
-import { getEnv } from '../helpers/config.js'
 import app from './app.js'
+import { getEnv } from '../utils/config.js'
 import { startApolloServer } from './apollo.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
