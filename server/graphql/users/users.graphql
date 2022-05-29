@@ -41,6 +41,7 @@ union UserArrayResult = UserArray | UserError
 
 input UserInput {
   id: ID
+  token: ID
   googleid: ID
   display_name: String
   email: String

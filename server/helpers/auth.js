@@ -71,7 +71,11 @@ export const hasPermissions = (user, requestedPermissions) => {
 
       if (bool === true) {
         if (v === 'self')
-          return permissions[k].includes(v) || permissions[k].includes('R')
+          return (
+            permissions[k].includes(v) ||
+            permissions[k].includes('R') ||
+            permissions[k].includes('ALL')
+          )
 
         return permissions[k].includes(v) || permissions[k].includes('ALL')
       }

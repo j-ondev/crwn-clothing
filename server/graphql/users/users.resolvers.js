@@ -3,6 +3,7 @@ import {
   verifyGoogleToken,
   generateToken,
   authorizeUser,
+  verifyToken,
 } from '../../helpers/auth.js'
 import { isJwt } from '../../utils/auth.js'
 
@@ -24,6 +25,16 @@ export default {
         }
 
       let requiredPermission = { users: 'R' }
+
+      if (filter.token && isJwt(filter.token)) {
+        const payload = verifyToken(filter.token)
+
+        filter = {
+          id: payload.sub,
+          display_name: payload.name,
+          email: payload.email,
+        }
+      }
 
       const users = await usersModel.getUser(filter)
 
