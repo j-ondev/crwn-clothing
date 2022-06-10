@@ -5,8 +5,11 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
+    "install:server": "yarn --cwd server install",
+    "install:client": "yarn --cwd client install",
     "server": "yarn --cwd server dev",
     "client": "yarn --cwd client start",
+    "install": "run-p install:server install:client",
     "initiate": "run-p server client"
   },
   "author": "João Zorzetti",
