@@ -8,7 +8,6 @@ You will see a lot of discrepancy between my code and theirs because I created a
 This project isn't supposed to be launched into production, I have made it to show some of my skills as developer (mainly the frontend).
 In the course you also learn about [Redux Sagas](https://redux-saga.js.org/), however, I decided to not use it since redux sagas would result in a lot of entropy and is not necessary on this project.
 
-
 ### What you will find in this project
 
 #### Frontend
